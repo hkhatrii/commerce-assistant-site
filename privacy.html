@@ -83,13 +83,14 @@
   data brokers, and we handle it in accordance with Meta's terms and policies.</p>
 
   <h2>6. Retention</h2>
-  <p>We retain messages, contacts and run logs for as long as the merchant's account is
-  active, and for a limited period afterwards as needed for security, dispute resolution
-  and legal compliance, after which they are deleted or anonymised. A merchant may
-  request earlier deletion (see section 8).</p>
+  <p>Messages and assistant run logs are automatically deleted 12 months after they were
+  created, and a customer's contact record is deleted after 12 months without a new
+  message. When a merchant uninstalls the app, all of that store's data is erased within
+  30 days. A customer's data is erased sooner on request (see section 8).</p>
 
   <h2>7. Security</h2>
-  <p>Data is encrypted in transit. Access to stored data is restricted to the Service's
+  <p>Data is encrypted in transit and at rest, and access to
+  customers' personal data is logged. Access to stored data is restricted to the Service's
   backend using least-privilege, server-side credentials; there is no public access to
   tenant data. Per-tenant secrets (such as store access tokens) are stored securely and
   never exposed to other tenants or end users.</p>
