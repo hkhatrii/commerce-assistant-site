@@ -75,6 +75,18 @@ function setStatus(el, text, cls) { el.textContent = text; el.className = "statu
 
 // --- provisioning nonce: ties the Shopify step and the WhatsApp step together ---
 const params = new URLSearchParams(location.search);
+
+// Opened by Shopify as the App URL (install from a link/listing, or the merchant
+// clicking the app in their admin): it adds ?shop=…&hmac=…. Start OAuth at once.
+if (params.get("hmac") && params.get("shop") && params.get("shopify") !== "connected") {
+  const s = params.get("shop").toLowerCase();
+  if (/^[a-z0-9][a-z0-9-]*\.myshopify\.com$/.test(s)) {
+    let n = store.get("ca_onboard_nonce") || crypto.randomUUID();
+    store.set("ca_onboard_nonce", n);
+    store.set("ca_onboard_shop", s);
+    location.replace(CONFIG.functionsBase + "/onboard-shopify/install?shop=" + encodeURIComponent(s) + "&nonce=" + encodeURIComponent(n));
+  }
+}
 let nonce = params.get("nonce") || store.get("ca_onboard_nonce");
 if (!nonce) nonce = crypto.randomUUID();
 store.set("ca_onboard_nonce", nonce);
