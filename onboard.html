@@ -42,8 +42,10 @@
 
   <section class="step" id="step-wa">
     <h2><span class="num">2</span>Connect WhatsApp</h2>
-    <p>Log in with Facebook and choose (or create) the WhatsApp Business account and number your customers message.</p>
+    <p>Connect the number you already use in the <b>WhatsApp Business app</b>. You keep using the app on your phone
+      as normal — the assistant works alongside it, and steps back whenever you reply yourself.</p>
     <button class="wa" id="btn-wa" disabled>Connect WhatsApp</button>
+    <p style="margin:12px 0 0;font-size:14px"><a href="#" id="link-new">No WhatsApp Business app? Connect a new number instead</a></p>
     <div class="status" id="wa-status"></div>
   </section>
 
@@ -117,7 +119,7 @@ window.fbAsyncInit = function () {
 
 // Embedded Signup reports the chosen WABA + phone number via postMessage; the
 // FB.login callback delivers the one-time code. Either can arrive first.
-let signup = { code: null, waba_id: null, phone_number_id: null };
+let signup = { code: null, waba_id: null, phone_number_id: null, coexistence: false };
 window.addEventListener("message", (event) => {
   if (!/^https:\/\/([a-z]+\.)?facebook\.com$/.test(event.origin)) return;
   let data;
@@ -126,6 +128,7 @@ window.addEventListener("message", (event) => {
   if (data.event === "FINISH" || data.event === "FINISH_ONLY_WABA" || data.event === "FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING") {
     signup.waba_id = data.data?.waba_id || null;
     signup.phone_number_id = data.data?.phone_number_id || null;
+    signup.coexistence = data.event === "FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING";
     maybeFinish();
   } else if (data.event === "CANCEL") {
     setStatus($("wa-status"), "Setup was closed before finishing" + (data.data?.current_step ? " (at " + data.data.current_step + ")" : "") + ".", "err");
@@ -136,9 +139,18 @@ window.addEventListener("message", (event) => {
   }
 });
 
-$("btn-wa").addEventListener("click", () => {
+// Default: coexistence — the merchant keeps their WhatsApp Business app number
+// on the phone. The link launches the plain flow for a brand-new number.
+$("btn-wa").addEventListener("click", () => launchSignup("whatsapp_business_app_onboarding"));
+$("link-new").addEventListener("click", (e) => {
+  e.preventDefault();
+  if (!$("btn-wa").disabled) launchSignup("");
+  else setStatus($("wa-status"), "Connect your store first.", "err");
+});
+
+function launchSignup(featureType) {
   if (typeof FB === "undefined") { setStatus($("wa-status"), "Facebook SDK is still loading — try again in a moment.", "err"); return; }
-  signup = { code: null, waba_id: null, phone_number_id: null };
+  signup = { code: null, waba_id: null, phone_number_id: null, coexistence: false };
   $("btn-wa").disabled = true;
   setStatus($("wa-status"), "Follow the steps in the Facebook window…");
   FB.login((response) => {
@@ -153,9 +165,9 @@ $("btn-wa").addEventListener("click", () => {
     config_id: CONFIG.metaConfigId,
     response_type: "code",
     override_default_response_type: true,
-    extras: { setup: {}, featureType: "", sessionInfoVersion: "3" },
+    extras: { setup: {}, featureType, sessionInfoVersion: "3" },
   });
-});
+}
 
 let finishing = false;
 let waitTimer = null;
