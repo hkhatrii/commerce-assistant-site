@@ -42,10 +42,9 @@
 
   <section class="step" id="step-wa">
     <h2><span class="num">2</span>Connect WhatsApp</h2>
-    <p>Connect the number you already use in the <b>WhatsApp Business app</b>. You keep using the app on your phone
-      as normal — the assistant works alongside it, and steps back whenever you reply yourself.</p>
+    <p id="wa-intro"></p>
     <button class="wa" id="btn-wa" disabled>Connect WhatsApp</button>
-    <p style="margin:12px 0 0;font-size:14px"><a href="#" id="link-new">No WhatsApp Business app? Connect a new number instead</a></p>
+    <p style="margin:12px 0 0;font-size:14px"><a href="#" id="link-new"></a></p>
     <div class="status" id="wa-status"></div>
   </section>
 
@@ -64,6 +63,11 @@ const CONFIG = {
   metaAppId: "980087935142220",
   metaConfigId: "1843769929957773",   // WhatsApp Embedded Signup configuration
   graphVersion: "v22.0",
+  // Which WhatsApp flow the main button starts. Coexistence (keep the WhatsApp
+  // Business app) needs Meta Advanced Access, so until App Review approves it the
+  // main button connects a new number and coexistence is the secondary link.
+  // After approval: set to true.
+  coexistenceDefault: false,
 };
 
 const $ = (id) => document.getElementById(id);
@@ -160,12 +164,23 @@ window.addEventListener("message", (event) => {
   }
 });
 
-// Default: coexistence — the merchant keeps their WhatsApp Business app number
-// on the phone. The link launches the plain flow for a brand-new number.
-$("btn-wa").addEventListener("click", () => launchSignup("whatsapp_business_app_onboarding"));
+// Main button + secondary link: coexistence (keep the WhatsApp Business app on the
+// phone) or a brand-new Cloud API number, ordered by CONFIG.coexistenceDefault.
+const COEX = "whatsapp_business_app_onboarding", NEW = "";
+const mainFlow = CONFIG.coexistenceDefault ? COEX : NEW;
+const altFlow = CONFIG.coexistenceDefault ? NEW : COEX;
+$("wa-intro").innerHTML = CONFIG.coexistenceDefault
+  ? "Connect the number you already use in the <b>WhatsApp Business app</b>. You keep using the app on your phone " +
+    "as normal — the assistant works alongside it, and steps back whenever you reply yourself."
+  : "Log in with Facebook and choose the WhatsApp Business account and phone number your customers message. " +
+    "Use a number that isn't active in the WhatsApp app.";
+$("link-new").textContent = CONFIG.coexistenceDefault
+  ? "No WhatsApp Business app? Connect a new number instead"
+  : "Already use the WhatsApp Business app? Keep it and connect the same number";
+$("btn-wa").addEventListener("click", () => launchSignup(mainFlow));
 $("link-new").addEventListener("click", (e) => {
   e.preventDefault();
-  if (!$("btn-wa").disabled) launchSignup("");
+  if (!$("btn-wa").disabled) launchSignup(altFlow);
   else setStatus($("wa-status"), "Connect your store first.", "err");
 });
 
