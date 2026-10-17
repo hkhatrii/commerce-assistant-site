@@ -98,15 +98,24 @@ if (params.get("shopify") === "connected" && params.get("shop")) {
   shopConnected = true;
   store.set("ca_onboard_shop", shop);
   store.set("ca_onboard_shop_ok", "1");
+  // The server reports whether this store already has WhatsApp connected.
+  store.set("ca_onboard_wa", params.get("whatsapp") || "");
   history.replaceState(null, "", location.pathname);   // tidy the URL
 }
 $("shop").value = shop;
+let waNumber = shopConnected ? (store.get("ca_onboard_wa") || "") : "";
 
 function render() {
   if (shopConnected) {
     $("step-shop").classList.add("done");
     setStatus($("shop-status"), "✓ Connected: " + shop, "ok");
     $("btn-wa").disabled = false;
+  }
+  if (waNumber) {
+    $("step-wa").classList.add("done");
+    setStatus($("wa-status"), "✓ Connected: " + waNumber, "ok");
+    $("btn-wa").textContent = "Reconnect WhatsApp";
+    $("final").style.display = "block";
   }
 }
 render();
@@ -207,6 +216,7 @@ function maybeFinish() {
     .then(({ ok, body }) => {
       if (!ok || !body.ok) throw new Error(body.error || "Connection failed");
       $("step-wa").classList.add("done");
+      store.set("ca_onboard_wa", body.display_phone_number || body.phone_number_id);
       setStatus($("wa-status"), "✓ Connected: " + (body.display_phone_number || body.phone_number_id) +
         (body.verified_name ? " (" + body.verified_name + ")" : ""), "ok");
       $("final").style.display = "block";
