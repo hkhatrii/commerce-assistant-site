@@ -64,10 +64,9 @@ const CONFIG = {
   metaConfigId: "1843769929957773",   // WhatsApp Embedded Signup configuration
   graphVersion: "v22.0",
   // Which WhatsApp flow the main button starts. Coexistence (keep the WhatsApp
-  // Business app) needs Meta Advanced Access, so until App Review approves it the
-  // main button connects a new number and coexistence is the secondary link.
-  // After approval: set to true.
-  coexistenceDefault: false,
+  // Business app) is the product default now that Meta App Review has granted
+  // Advanced Access; the secondary link connects a brand-new number instead.
+  coexistenceDefault: true,
 };
 
 const $ = (id) => document.getElementById(id);
