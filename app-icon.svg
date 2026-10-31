@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" role="img" aria-label="Commerce Assistant">
+  <defs>
+    <linearGradient id="caBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5146E6"/>
+      <stop offset="1" stop-color="#16B6D4"/>
+    </linearGradient>
+  </defs>
+  <rect width="120" height="120" rx="27" fill="url(#caBg)"/>
+  <!-- chat bubble -->
+  <path d="M33 80 Q24 92 20.5 95.5 Q41 90 49 80 Z" fill="#fff"/>
+  <rect x="21" y="25" width="74" height="58" rx="15" fill="#fff"/>
+  <!-- shopping bag -->
+  <path d="M50.3 51 C50.3 41.5 66.7 41.5 66.7 51" fill="none" stroke="#4F46E5" stroke-width="4.1" stroke-linecap="round"/>
+  <rect x="43" y="49.5" width="31" height="23" rx="5.5" fill="#4F46E5"/>
+  <circle cx="50.3" cy="54.6" r="1.7" fill="#fff"/>
+  <circle cx="66.7" cy="54.6" r="1.7" fill="#fff"/>
+  <!-- sparkle -->
+  <path d="M97 15 Q98 23 105 25 Q98 27 97 35 Q96 27 89 25 Q96 23 97 15 Z" fill="#FFC43D"/>
+</svg>
